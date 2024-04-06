@@ -14,35 +14,15 @@ import time
 # Define the Streamlit app
 def app():
 
-    st.subheader('K-means clustering applied to the Iris Dataset')
-    text = """This is a classic example of unsupervised learning task. The Iris dataset contains 
-    information about Iris flowers (sepal length, sepal width, petal length, petal width) but 
-    doesn't have labels indicating the flower species (Iris Setosa, Iris Versicolor, 
-    Iris Virginica). K-means doesn't use these labels during clustering.
-    \n* **K-means Clustering:** The algorithm aims to group data points into a predefined 
-    number of clusters (k). It iteratively assigns each data point to the nearest cluster 
-    centroid (center) and recomputes the centroids based on the assigned points. This process 
-    minimizes the within-cluster distances, creating groups with similar characteristics.
-    In essence, K-means helps uncover inherent groupings within the Iris data based on their 
-    features (measurements) without relying on predefined categories (flower species). 
-    This allows us to explore how well the data separates into natural clusters, potentially 
-    corresponding to the actual flower species.
-    \n* Choosing the optimal number of clusters (k) is crucial. The "elbow method" 
-    helps visualize the trade-off between increasing clusters and decreasing improvement 
-    in within-cluster distances.
-    * K-means is sensitive to initial centroid placement. Running the algorithm multiple times 
-    with different initializations can help identify more stable clusters.
-    By applying K-means to the Iris dataset, we gain insights into the data's underlying structure 
-    and potentially validate the separability of the known flower species based on their 
-    measured characteristics."""
-    st.write(text)
+    st.subheader('K-means clustering applied to the diabetes Dataset')
+    
 
 
     if st.button("Begin"):
-        # Load the Iris dataset
-        iris = datasets.load_iris()
-        X = iris.data  # Features
-        y = iris.target  # Target labels (species)
+        # Load the diabetes dataset
+        diabetes = datasets.load_diabetes()
+        X = diabetes.data  # Features
+        y = diabetes.target  # Target labels (species)
 
         # Define the K-means model with 3 clusters (known number of species)
         kmeans = KMeans(n_clusters=3, random_state=0, n_init=10)
@@ -76,7 +56,7 @@ def app():
         In this case, a Silhouette Score of 0.5528 suggests:
         * **Moderately separated clusters:** The data points within a cluster are somewhat closer to their centroid than to centroids of other clusters. There's some separation, but it's not perfect
         * **Potential for improvement:** You might consider exploring different numbers of clusters (k) or using different initialization methods for K-means to see if a better clustering solution can be achieved with a higher Silhouette Score (closer to 1).
-        * The Iris dataset is relatively well-separated into three flower species. A Silhouette Score above 0.5 might be achievable with an appropriate number of clusters (k=3) and good initialization.
+        * The diabetes dataset is relatively well-separated into three flower species. A Silhouette Score above 0.5 might be achievable with an appropriate number of clusters (k=3) and good initialization.
         * The optimal k can vary depending on the specific dataset and the desired level of granularity in the clustering."""
         with st.expander("Click here for more information."):\
             st.write(text)
@@ -88,22 +68,24 @@ def app():
         unique_labels = list(set(y_pred))
         colors = plt.cm.get_cmap('viridis')(np.linspace(0, 1, len(unique_labels)))
 
+        
+        selected_feature_index = 2  
+        selected_feature = diabetes.feature_names[selected_feature_index]
+
+        selected_feature_index1 = 3  
+        selected_feature1 = diabetes.feature_names[selected_feature_index1]
+
+        # Plotting the selected feature against the target
         fig, ax = plt.subplots(figsize=(8, 6))
-
-        for label, color in zip(unique_labels, colors):
-            indices = y_pred == label
-            # Use ax.scatter for consistent plotting on the created axis
-            ax.scatter(X[indices, 0], X[indices, 1], label=iris.target_names[label], c=color)
-
-        # Add labels and title using ax methods
-        ax.set_xlabel('Sepal length (cm)')
-        ax.set_ylabel('Sepal width (cm)')
-        ax.set_title('Sepal Length vs Width Colored by Predicted Iris Species')
-
-        # Add legend and grid using ax methods
+        ax.scatter(X[:, selected_feature_index], y, c='blue', label='Actual Diabetes Progression')
+        ax.scatter(X[:, selected_feature_index], y_pred, c='red', label='Predicted Diabetes Progression')
+        ax.set_xlabel(selected_feature)
+        ax.set_ylabel(selected_feature1)
+        ax.set_title(f'Visualization of Diabetes Dataset: {selected_feature} vs  {selected_feature1}')
         ax.legend()
-        ax.grid(True)
         st.pyplot(fig)
+
+       
 
 
 #run the app
